@@ -26,9 +26,14 @@
     "@builder.io/qwik": "^1.15.0",
     "@builder.io/qwik-city": "^1.15.0",
     "@eslint/js": "latest",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "20.14.11",
     "eslint": "9.25.1",
     "eslint-plugin-qwik": "^1.15.0",
+    "flowbite": "^3.1.2",
+    "flowbite-qwik": "^1.1.2",
+    "flowbite-qwik-icons": "^0.1.10",
     "globals": "16.0.0",
     "prettier": "3.3.3",
     "typescript": "5.4.5",
@@ -37,5 +42,16 @@
     "undici": "*",
     "vite": "5.3.5",
     "vite-tsconfig-paths": "^4.2.1"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "bcryptjs": "^2.4.3",
+    "dayjs": "^1.11.13",
+    "highlight.js": "^11.10.0",
+    "jsonwebtoken": "^9.0.2",
+    "marked": "^15.0.4",
+    "tailwindcss": "^4.1.11",
+    "uuid": "^11.0.3",
+    "zod": "^3.23.8"
   }
 }
