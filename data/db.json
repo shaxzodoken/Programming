@@ -1,0 +1,45 @@
+{
+  "users": [
+    {
+      "id": "6c4cc54f-6f70-45b8-83f4-8b8b7d8fc2a7",
+      "email": "admin@example.com",
+      "name": "Admin",
+      "passwordHash": "$2a$10$Teg.wfp31bYM4pZO39uKxeClfOIh6kRDrIgL87hV1RL29RSDyV3C2",
+      "role": "admin"
+    }
+  ],
+  "courses": [
+    {
+      "id": "9c91014a-9c3f-435a-bd06-6f6b3e4f5929",
+      "slug": "qwik-city-foundations",
+      "title": "Qwik City Foundations",
+      "description": "Resumability, routing, server functions va real loyihalar",
+      "isPremium": false,
+      "lessons": [
+        {
+          "id": "f6aba60f-42f2-4e9e-8afa-357c4e791133",
+          "slug": "welcome",
+          "title": "Kirish",
+          "freePreview": true,
+          "contentMd": "# Xush kelibsiz\n\nUshbu darsda Qwik City asoslari bilan tanishamiz.\n\n```tsx\nexport const Hello = () => <div>Salom Qwik!</div>\n```"
+        }
+      ]
+    },
+    {
+      "id": "43e1978c-cae9-48bb-856f-756eee21b793",
+      "slug": "mojo-for-ml",
+      "title": "Mojo for AI/ML",
+      "description": "Mojo tilida yuqori unumdor AI/ML amaliyoti",
+      "isPremium": true,
+      "lessons": [
+        {
+          "id": "3228d843-ee9b-427f-9f24-3fedaa56a69b",
+          "slug": "intro",
+          "title": "Mojo kirish",
+          "freePreview": true,
+          "contentMd": "# Mojo nima?\n\nMojo — Python’ga mos, HPC uchun yaratilgan til."
+        }
+      ]
+    }
+  ]
+}

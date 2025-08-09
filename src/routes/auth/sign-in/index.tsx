@@ -1,15 +1,17 @@
 import { component$, useSignal } from '@builder.io/qwik';
 import { Form, routeAction$, zod$ } from '@builder.io/qwik-city';
-import { findUserByEmail } from '../../../lib/db';
 import { signInSchema, verifyPassword, signToken } from '../../../lib/auth';
+import { ensurePg } from '../../../lib/pg';
 
 export const useSignIn = routeAction$(async (data, event) => {
   const parsed = signInSchema.safeParse(data);
   if (!parsed.success) return { success: false, message: 'Maʼlumotlarni tekshiring' };
   const { email, password } = parsed.data;
-  const user = await findUserByEmail(email);
+  const pg = await ensurePg();
+  const q = await pg.query('select id, name, email, password_hash, role from users where email=$1', [email]);
+  const user = q.rows[0];
   if (!user) return { success: false, message: 'Email yoki parol noto‘g‘ri' };
-  const ok = verifyPassword(password, user.passwordHash);
+  const ok = verifyPassword(password, user.password_hash);
   if (!ok) return { success: false, message: 'Email yoki parol noto‘g‘ri' };
   const token = signToken({ id: user.id, email: user.email, name: user.name, role: user.role });
   event.cookie.set('qa_session', token, { path: '/', httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 7 });

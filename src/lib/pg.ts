@@ -1,4 +1,5 @@
 import { Client } from 'pg';
+import { hashPassword } from './auth';
 
 let client: Client | null = null;
 
@@ -9,7 +10,7 @@ export function getPgClient(): Client {
   const port = Number(process.env.PGPORT || '5432');
   const database = process.env.PGDATABASE || 'Programming';
   const user = process.env.PGUSER || 'postgres';
-  const password = process.env.PGPASSWORD || '';
+  const password = process.env.PGPASSWORD || 'root';
 
   client = new Client(
     url
@@ -33,6 +34,7 @@ export async function ensurePg(): Promise<Client> {
 
 async function seed(c: Client) {
   await c.query(`
+    create extension if not exists pgcrypto;
     create table if not exists courses (
       id uuid primary key default gen_random_uuid(),
       slug text unique not null,
@@ -50,6 +52,16 @@ async function seed(c: Client) {
       content_md text not null,
       free_preview boolean not null default false,
       unique(course_slug, slug)
+    );
+  `);
+  await c.query(`
+    create table if not exists users (
+      id uuid primary key default gen_random_uuid(),
+      name text not null,
+      email text unique not null,
+      password_hash text not null,
+      role text not null default 'student',
+      created_at timestamptz not null default now()
     );
   `);
 
@@ -78,6 +90,26 @@ async function seed(c: Client) {
       [
         'qwik-city-foundations', 'welcome', 'Kirish', '# Qwik City\n\nStart here.', true,
         'mojo-for-ml', 'intro', 'Mojo kirish', '# Mojo nima?\n\nAI uchun tez.', true,
+      ],
+    );
+  }
+
+  // seed users if empty
+  const u = await c.query('select count(*)::int as n from users');
+  if (u.rows[0]?.n === 0) {
+    const adminPass = hashPassword('admin123');
+    const instrPass = hashPassword('instructor123');
+    const studPass = hashPassword('student123');
+    await c.query(
+      `insert into users (name, email, password_hash, role) values 
+       ($1,$2,$3,'admin'),
+       ($4,$5,$6,'instructor'),
+       ($7,$8,$9,'student')
+       on conflict do nothing`,
+      [
+        'Admin','admin@example.com',adminPass,
+        'Instructor','instructor@example.com',instrPass,
+        'Student','student@example.com',studPass,
       ],
     );
   }

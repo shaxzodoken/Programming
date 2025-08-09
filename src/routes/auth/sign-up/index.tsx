@@ -1,16 +1,19 @@
 import { component$ } from '@builder.io/qwik';
 import { Form, routeAction$ } from '@builder.io/qwik-city';
-import { createUser, findUserByEmail } from '../../../lib/db';
 import { hashPassword, signToken, signUpSchema } from '../../../lib/auth';
+import { ensurePg } from '../../../lib/pg';
 
 export const useSignUp = routeAction$(async (data, event) => {
   const parsed = signUpSchema.safeParse(data);
   if (!parsed.success) return { success: false, message: 'Maʼlumotlarni tekshiring' };
   const { email, name, password } = parsed.data;
-  const exists = await findUserByEmail(email);
-  if (exists) return { success: false, message: 'Ushbu email allaqachon mavjud' };
-  const user = await createUser({ email, name, passwordHash: hashPassword(password), role: 'student' });
-  const token = signToken({ id: user.id, email: user.email, name: user.name, role: user.role });
+  const pg = await ensurePg();
+  const ex = await pg.query('select id from users where email=$1', [email]);
+  if (ex.rowCount && ex.rowCount > 0) return { success: false, message: 'Ushbu email allaqachon mavjud' };
+  const pass = hashPassword(password);
+  const ins = await pg.query('insert into users (name, email, password_hash, role) values ($1,$2,$3,$4) returning id, name, email, role', [name, email, pass, 'student']);
+  const user = ins.rows[0];
+  const token = signToken({ id: user.id, email: user.email, name: user.name, role: user.role as any });
   event.cookie.set('qa_session', token, { path: '/', httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 7 });
   throw event.redirect(302, '/');
 });

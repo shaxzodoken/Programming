@@ -14,10 +14,11 @@ export default component$(() => {
   return (
     <section class="mx-auto max-w-5xl px-6 py-12">
       <h1 class="text-2xl font-semibold">Admin panel</h1>
-      <p class="mt-2 text-gray-600 dark:text-gray-300">Foydalanuvchilar va kurslarni boshqarish (soddalashtirilgan demo).</p>
+      <p class="mt-2 text-gray-600 dark:text-gray-300">Foydalanuvchilar va kurslarni boshqarish.</p>
       <ul class="mt-6 list-disc pl-6 text-sm">
         <li>RBAC guard: faqat admin kirishi mumkin</li>
-        <li>Kurslar JSON DB orqali saqlanadi</li>
+        <li><a class="text-blue-600" href="/admin/users">Foydalanuvchilar</a></li>
+        <li><a class="text-blue-600" href="/admin/courses">Kurslar</a></li>
       </ul>
     </section>
   );

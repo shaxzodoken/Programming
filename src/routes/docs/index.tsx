@@ -11,6 +11,12 @@ export default component$(() => {
         <li><b>Instructor</b>: kurs qo‘shish/yangilash</li>
         <li><b>Admin</b>: barcha resurslarga to‘liq kirish</li>
       </ul>
+      <h2>Demo loginlar</h2>
+      <ul>
+        <li><b>Admin</b>: admin@example.com / admin123</li>
+        <li><b>Instructor</b>: instructor@example.com / instructor123</li>
+        <li><b>Student</b>: student@example.com / student123</li>
+      </ul>
     </section>
   );
 });
