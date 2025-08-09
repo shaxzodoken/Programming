@@ -1,10 +1,11 @@
 import { component$ } from '@builder.io/qwik';
 import { routeLoader$ , Link } from '@builder.io/qwik-city';
-import { listCourses } from '../../lib/db';
+import { ensurePg } from '../../lib/pg';
 
 export const useCourses = routeLoader$(async () => {
-  const courses = await listCourses();
-  return courses;
+  const pg = await ensurePg();
+  const { rows } = await pg.query('select id, slug, title, description, is_premium from courses order by title asc');
+  return rows as { id: string; slug: string; title: string; description: string; is_premium: boolean }[];
 });
 
 export default component$(() => {
@@ -17,7 +18,7 @@ export default component$(() => {
           <Link key={c.id} href={`/courses/${c.slug}`} class="block rounded-xl border border-gray-200/60 bg-white p-5 shadow-sm transition hover:shadow dark:border-gray-800/60 dark:bg-gray-900">
             <div class="flex items-center justify-between">
               <h3 class="text-lg font-medium">{c.title}</h3>
-              {c.isPremium && (
+              {c.is_premium && (
                 <span class="rounded bg-yellow-400 px-2 py-0.5 text-xs font-semibold text-black">Premium</span>
               )}
             </div>

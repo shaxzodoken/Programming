@@ -2,6 +2,7 @@ import { component$, useResource$, Resource } from '@builder.io/qwik';
 
 export default component$(() => {
   const me = useResource$(async () => {
+    if (import.meta.env.SSR) return { user: null } as { user: null | { name: string } };
     const res = await fetch('/api/me');
     return (await res.json()) as { user: null | { name: string } };
   });
