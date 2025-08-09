@@ -8,7 +8,7 @@ export const useCourses = routeLoader$(async ({ cookie, redirect }) => {
   const me = token ? verifyToken(token) : null;
   if (!me || me.role !== 'admin') throw redirect(302, '/auth/sign-in');
   const pg = await ensurePg();
-  const { rows } = await pg.query('select id, slug, title, description, is_premium from courses order by created_at desc nulls last, title asc');
+  const { rows } = await pg.query('select id, slug, title, description, is_premium from courses order by title asc');
   return rows as any[];
 });
 
@@ -33,9 +33,23 @@ export const useCreateCourse = routeAction$(async (data, { cookie, redirect, fai
   is_premium: z.string().optional(),
 })));
 
+export const useDeleteCourse = routeAction$(async (data, { cookie, redirect, fail }) => {
+  const token = cookie.get('qa_session')?.value;
+  const me = token ? verifyToken(token) : null;
+  if (!me || me.role !== 'admin') throw redirect(302, '/auth/sign-in');
+  const pg = await ensurePg();
+  try {
+    await pg.query('delete from courses where slug=$1', [data.slug]);
+    return { ok: true };
+  } catch (e: any) {
+    return fail(400, { message: e?.message || 'Xatolik' });
+  }
+}, zod$((z) => z.object({ slug: z.string().min(1) })));
+
 export default component$(() => {
   const courses = useCourses();
   const create = useCreateCourse();
+  const del = useDeleteCourse();
   return (
     <section class="mx-auto max-w-5xl px-6 py-12">
       <h1 class="text-2xl font-semibold">Kurslar (Admin)</h1>
@@ -59,6 +73,7 @@ export default component$(() => {
               <th class="p-3">Slug</th>
               <th class="p-3">Title</th>
               <th class="p-3">Premium</th>
+              <th class="p-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -67,6 +82,13 @@ export default component$(() => {
                 <td class="p-3">{c.slug}</td>
                 <td class="p-3">{c.title}</td>
                 <td class="p-3">{c.is_premium ? 'yes' : 'no'}</td>
+                <td class="p-3">
+                  <a class="mr-3 text-blue-600" href={`/admin/courses/${c.slug}/lessons`}>Lessons</a>
+                  <form method="post" class="inline" preventdefault:submit onSubmit$={(e, el) => del.submit(new FormData(el as HTMLFormElement))}>
+                    <input type="hidden" name="slug" value={c.slug} />
+                    <button class="text-red-600">Delete</button>
+                  </form>
+                </td>
               </tr>
             ))}
           </tbody>

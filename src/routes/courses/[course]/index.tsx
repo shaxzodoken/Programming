@@ -1,6 +1,7 @@
 import { component$ } from '@builder.io/qwik';
 import { routeLoader$, Link } from '@builder.io/qwik-city';
 import { ensurePg } from '../../../lib/pg';
+import { Breadcrumbs } from '../../../components/breadcrumbs';
 
 export const useCourse = routeLoader$(async ({ params, error }) => {
   const pg = await ensurePg();
@@ -15,6 +16,7 @@ export default component$(() => {
   const course = useCourse();
   return (
     <section class="mx-auto max-w-3xl px-6 py-12">
+      <Breadcrumbs items={[{ href: '/', label: 'Bosh sahifa' }, { href: '/courses', label: 'Kurslar' }, { href: `/courses/${course.value.slug}`, label: course.value.title }]} />
       <div class="flex items-start justify-between gap-6">
         <div>
           <h1 class="text-2xl font-semibold">{course.value.title}</h1>
@@ -24,11 +26,11 @@ export default component$(() => {
           <span class="rounded bg-yellow-400 px-2 py-0.5 text-xs font-semibold text-black self-center">Premium</span>
         )}
       </div>
-      <ol class="mt-8 space-y-3">
+      <ol class="mt-8 divide-y rounded border dark:divide-gray-800 dark:border-gray-800">
         {course.value.lessons.map((l: any, idx: number) => (
-          <li key={l.id} class="flex items-center justify-between rounded border p-4 dark:border-gray-800">
+          <li key={l.id} class="flex items-center justify-between p-4">
             <div>
-              <div class="text-sm text-gray-500">Dars {idx + 1}</div>
+              <div class="text-xs text-gray-500">Dars {idx + 1}</div>
               <div class="font-medium">{l.title}</div>
               {l.free_preview && <div class="text-xs text-green-600">Bepul preview</div>}
             </div>
